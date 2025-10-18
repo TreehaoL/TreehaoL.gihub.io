@@ -955,8 +955,8 @@
             // 根据得分显示不同的消息
             const percentage = (score / totalQuestions) * 100;
             let message = '';
-            if (percentage >= 90) {
-                message = '太棒了！你是网络安全法律专家！';
+            if (percentage >= 95) {
+                message = '太棒了！你是网络安全法律专家！\n\n找我们摊位人员领取小礼品吧！';
             } else if (percentage >= 70) {
                 message = '做得很好！你对网络安全法律有很好的理解！';
             } else if (percentage >= 50) {
@@ -1127,13 +1127,13 @@
                 textArea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
-                alert('分享内容已复制到剪贴板，快去粘贴分享吧！');
+                alert('分享内容已复制到剪贴板，快去粘贴分享吧！\n\nPS:转发给他人，给摊位工作人员展示也有机会活动小礼品哦！');
             }
         }
 
         // 保存成绩截图
         function saveResult() {
-            alert('由于浏览器安全限制，请使用手机截图功能保存您的成绩页面。\n\n我们正在努力开发更便捷的分享功能！');
+            alert('还想我帮你截图？可是我不会啊，自己截图吧！');//由于浏览器安全限制，请使用手机截图功能保存您的成绩页面。\n\n我们正在努力开发更便捷的分享功能！
         }
 
         // 事件监听
