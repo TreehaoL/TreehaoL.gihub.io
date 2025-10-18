@@ -1049,6 +1049,13 @@
                 backgroundMusic.volume = this.value;
                 updateVolumeIcon(this.value);
             });
+        function updateVolumeDisplay(volume) {
+            const percentage = Math.round(volume * 100);
+            const volumePercentage = document.getElementById('volume-percentage');
+            if (volumePercentage) {
+            volumePercentage.textContent = `${percentage}%`;
+                }
+          }
             
             // 更新音量图标
             function updateVolumeIcon(volume) {
