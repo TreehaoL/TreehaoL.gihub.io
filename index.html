@@ -510,12 +510,11 @@
         <div class="music-control" id="music-control">
             <div class="music-icon">🎵</div>
         </div>
-        <div class="volume-controls">
+        <div class="volume-control" id="volume-control"> <!-- 这里改为 volume-control -->
             <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.1" value="0.5">
             <span id="volume-percentage">50%</span>
         </div>
     </div>
-    
     <!-- 音频元素 -->
     <audio id="background-music" loop>
         <!-- 替换为你自己的音乐文件路径 -->
@@ -1039,33 +1038,45 @@
         function initVolumeControl() {
             const volumeControl = document.getElementById('volume-control');
             const volumeSlider = document.getElementById('volume-slider');
+            const volumePercentage = document.getElementById('volume-percentage');
             const backgroundMusic = document.getElementById('background-music');
+            
+            // 确保元素存在
+            if (!volumeSlider || !volumePercentage || !backgroundMusic) {
+                console.log('音量控制元素未找到');
+                return;
+            }
             
             // 设置初始音量
             backgroundMusic.volume = volumeSlider.value;
+            updateVolumeDisplay(volumeSlider.value);
             
             // 音量滑块变化事件
             volumeSlider.addEventListener('input', function() {
                 backgroundMusic.volume = this.value;
+                updateVolumeDisplay(this.value);
                 updateVolumeIcon(this.value);
             });
-        function updateVolumeDisplay(volume) {
-            const percentage = Math.round(volume * 100);
-            const volumePercentage = document.getElementById('volume-percentage');
-            if (volumePercentage) {
-            volumePercentage.textContent = `${percentage}%`;
+            
+            // 更新音量显示百分比
+            function updateVolumeDisplay(volume) {
+                const percentage = Math.round(volume * 100);
+                if (volumePercentage) {
+                    volumePercentage.textContent = `${percentage}%`;
                 }
-          }
+            }
             
             // 更新音量图标
             function updateVolumeIcon(volume) {
-                const volumeIcon = document.querySelector('.volume-icon');
+                const musicIcon = document.querySelector('.music-icon');
+                if (!musicIcon) return;
+                
                 if (volume == 0) {
-                    volumeIcon.textContent = '🔇';
+                    musicIcon.textContent = '🔇';
                 } else if (volume < 0.5) {
-                    volumeIcon.textContent = '🔈';
+                    musicIcon.textContent = '🔈';
                 } else {
-                    volumeIcon.textContent = '🔊';
+                    musicIcon.textContent = '🔊';
                 }
             }
             
@@ -1073,26 +1084,27 @@
             updateVolumeIcon(volumeSlider.value);
             
             // 点击音量控制区域保持显示
-            volumeControl.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-            
-            // 点击页面其他地方隐藏音量控制
-            document.addEventListener('click', function() {
-                volumeControl.classList.remove('show');
-            });
-            
-            // 音乐控制按钮点击时显示音量控制
-            document.getElementById('music-control').addEventListener('click', function(e) {
-                e.stopPropagation();
-                volumeControl.classList.toggle('show');
-            });
+            if (volumeControl) {
+                volumeControl.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+                
+                // 点击页面其他地方隐藏音量控制
+                document.addEventListener('click', function() {
+                    volumeControl.classList.remove('show');
+                });
+                
+                // 音乐控制按钮点击时显示音量控制
+                document.getElementById('music-control').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    volumeControl.classList.toggle('show');
+                });
+            }
         }
         
         // 在页面加载完成后初始化音量控制
         document.addEventListener('DOMContentLoaded', function() {
             initVolumeControl();
-            // 其他初始化代码...
         });
 
         // 分享到微信
@@ -1125,13 +1137,15 @@
         }
 
         // 事件监听
+        
         nextBtn.addEventListener('click', nextQuestion);
         prevBtn.addEventListener('click', prevQuestion);
         restartBtn.addEventListener('click', restartQuiz);
         shareWechatBtn.addEventListener('click', shareToWechat);
         saveResultBtn.addEventListener('click', saveResult);
         musicControl.addEventListener('click', toggleMusic);
-
+        // 确保音量控制已初始化
+        initVolumeControl();
         // 初始化应用
         init();
     </script>
