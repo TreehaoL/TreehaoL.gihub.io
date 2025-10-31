@@ -532,7 +532,7 @@
             
             <div class="progress-container">
                 <div class="progress-info">
-                    <span>进度: <span id="current-question">1</span>/<span id="total-questions">15</span></span>
+                    <span>进度: <span id="current-question">1</span>/<span id="total-questions">30</span></span>
                     <span>得分: <span id="current-score">0</span></span>
                 </div>
                 <div class="progress">
@@ -562,7 +562,7 @@
             <div class="certificate">
                 <div class="certificate-content">
                     <h2>普法小卫士证书</h2>
-                    <div class="score" id="final-score">0/15</div>
+                    <div class="score" id="final-score">0/30</div>
                     <p>恭喜你完成了网络安全法律知识测试！</p>
                     <p>继续学习，成为网络空间的法律守护者！</p>
                     <p id="result-message"></p>
@@ -984,7 +984,30 @@ const questions = [
             backgroundImage.style.backgroundImage = `url('${backgroundImages[randomIndex]}')`;
         }
 
-        // 显示当前题目
+        // 选项随机化函数
+        function randomizeOptions(options, correctIndex) {
+            // 创建选项副本
+            const shuffledOptions = [...options];
+            
+            // 保存正确答案的文本
+            const correctAnswer = shuffledOptions[correctIndex];
+            
+            // 随机排序选项
+            for (let i = shuffledOptions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+            }
+            
+            // 找到正确答案在新数组中的位置
+            const newCorrectIndex = shuffledOptions.indexOf(correctAnswer);
+            
+            // 返回随机化后的选项和新正确索引
+            const result = shuffledOptions;
+            result.originalCorrectIndex = newCorrectIndex; // 保存随机化后的正确索引
+            return result;
+        }
+        
+        // 修改showQuestion函数，使用随机化选项
         function showQuestion() {
             const question = questions[currentQuestionIndex];
             questionText.textContent = question.question;
@@ -1010,16 +1033,20 @@ const questions = [
                 showAnswerFeedback();
             }
             
+            // 创建随机化选项
+            const randomizedOptions = randomizeOptions(question.options, question.correctIndex);
+            
             // 创建选项
-            question.options.forEach((option, index) => {
+            randomizedOptions.forEach((option, index) => {
                 const optionElement = document.createElement('div');
                 optionElement.className = 'option';
                 
                 // 如果已回答过此题，标记正确/错误选项
                 if (isAnswerChecked) {
-                    if (index === question.correctIndex) {
+                    const originalCorrectIndex = randomizedOptions.originalCorrectIndex;
+                    if (index === originalCorrectIndex) {
                         optionElement.classList.add('correct');
-                    } else if (index === selectedOptionIndex && index !== question.correctIndex) {
+                    } else if (index === selectedOptionIndex && index !== originalCorrectIndex) {
                         optionElement.classList.add('incorrect');
                     }
                     
@@ -1035,32 +1062,20 @@ const questions = [
                 optionsContainer.appendChild(optionElement);
             });
         }
-
-        // 选择选项
-        function selectOption(index) {
-            if (isAnswerChecked) return;
-            
-            // 移除之前的选择
-            const options = document.querySelectorAll('.option');
-            options.forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            // 标记当前选择
-            options[index].classList.add('selected');
-            selectedOptionIndex = index;
-            userAnswers[currentQuestionIndex] = index;
-            
-            // 检查答案并显示反馈
-            checkAnswer();
-        }
-
-        // 检查答案
+        
+        // 修改检查答案函数，处理随机化选项
         function checkAnswer() {
             if (selectedOptionIndex === null) return;
             
             const question = questions[currentQuestionIndex];
-            const isCorrect = selectedOptionIndex === question.correctIndex;
+            const options = document.querySelectorAll('.option');
+            
+            // 获取随机化后的正确索引
+            const randomizedCorrectIndex = Array.from(options).findIndex(option => 
+                option.textContent === question.options[question.correctIndex]
+            );
+            
+            const isCorrect = selectedOptionIndex === randomizedCorrectIndex;
             
             // 显示特效反馈
             if (isCorrect) {
@@ -1078,10 +1093,9 @@ const questions = [
             }, 2000);
             
             // 标记正确和错误选项
-            const options = document.querySelectorAll('.option');
             options.forEach((option, index) => {
                 option.classList.add('disabled');
-                if (index === question.correctIndex) {
+                if (index === randomizedCorrectIndex) {
                     option.classList.add('correct');
                 } else if (index === selectedOptionIndex && !isCorrect) {
                     option.classList.add('incorrect');
@@ -1094,7 +1108,6 @@ const questions = [
             
             isAnswerChecked = true;
         }
-
         // 显示答案反馈（用于回顾时）
         function showAnswerFeedback() {
             const question = questions[currentQuestionIndex];
@@ -1284,6 +1297,11 @@ const questions = [
             initVolumeControl();
         });
 
+        // 添加页面点击激活音乐功能
+        document.addEventListener('click', function() {
+        // 页面被点击后，可以尝试预加载音乐
+            backgroundMusic.load();
+        }, { once: true }); // 只执行一次
         // 分享到微信
         function shareToWechat() {
             const shareText = `我在「网络普法知识问答」中获得了 ${score}/${totalQuestions} 分！${score >= 10 ? '快来挑战吧！' : '你也来试试吧！'}`;
