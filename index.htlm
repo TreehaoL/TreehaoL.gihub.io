@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计科创新班团支部·普法知识问答</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 1s ease;
+        }
+        
+        /* 背景图片样式 */
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .progress {
+            background: #f0f0f0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+        
+        .question-container {
+            margin-bottom: 25px;
+        }
+        
+        .question {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .option.selected {
+            border-color: #4CAF50;
+            background: #e8f5e8;
+        }
+        
+        .option.correct {
+            border-color: #4CAF50;
+            background: #e8f5e8;
+            animation: pulse-correct 1s ease;
+        }
+        
+        .option.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+            animation: shake 0.5s ease;
+        }
+        
+        .option.disabled {
+            pointer-events: none;
+        }
+        
+        /* 正确提示特效 */
+        .correct-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+            animation: zoomIn 0.5s ease, zoomOut 0.5s ease 1.5s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        /* 错误提示特效 */
+        .incorrect-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+            animation: zoomIn 0.5s ease, zoomOut 0.5s ease 1.5s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes zoomIn {
+            from { 
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            to { 
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        @keyframes zoomOut {
+            from { 
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            to { 
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.5);
+            }
+        }
+        
+        @keyframes pulse-correct {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .feedback.correct {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #4CAF50;
+        }
+        
+        .feedback.incorrect {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .button:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .button-prev {
+            background: #FF9800;
+        }
+        
+        .button-prev:hover {
+            background: #F57C00;
+        }
+        
+        .button-restart {
+            background: #FF9800;
+        }
+        
+        .button-restart:hover {
+            background: #F57C00;
+        }
+        
+        .result-container {
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        .certificate {
+            border: 3px solid #4CAF50;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #f9f9f9, #e8f5e8);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .certificate::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background-size: cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .certificate-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .score {
+            font-size: 48px;
+            color: #4CAF50;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .review-panel {
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .review-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .review-item {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .review-question {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .review-answer {
+            color: #666;
+        }
+        
+        .review-correct {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .review-incorrect {
+            color: #f44336;
+            text-decoration: line-through;
+        }
+        
+        .share-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .share-text {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .share-btn {
+            padding: 10px 20px;
+            background: #07C160;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .share-btn:hover {
+            background: #06AD56;
+            transform: translateY(-2px);
+        }
+        
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .music-control:hover {
+            transform: scale(1.1);
+        }
+        
+        .music-icon {
+            font-size: 24px;
+            color: #667eea;
+        }
+        
+        /* 音量控制样式 */
+        .volume-control {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 100;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+        }
+
+        .volume-control.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 5px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* 音乐控制按钮添加悬停效果 */
+        .music-control:hover + .volume-control,
+        .volume-control:hover {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+        
+        /* 加载动画 */
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景图片 -->
+    <div class="background-image" id="background-image"></div>
+    
+    <!-- 答题反馈特效 -->
+    <div class="correct-feedback" id="correct-feedback">✓ 回答正确！</div>
+    <div class="incorrect-feedback" id="incorrect-feedback">✗ 回答错误</div>
+    
+    <!-- 音乐控制区域 -->
+    <div class="music-controls">
+        <div class="music-control" id="music-control">
+            <div class="music-icon">🎵</div>
+        </div>
+        <div class="volume-control" id="volume-control">
+            <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.1" value="0.5">
+            <span id="volume-percentage">50%</span>
+        </div>
+    </div>
+    
+    <!-- 音频元素 -->
+    <audio id="background-music" loop>
+        <source src="./assets/audio/循环宁静-钢琴独奏_爱给网_aigei_com.mp3" type="audio/mpeg">
+        您的浏览器不支持音频元素。
+    </audio>
+    
+    <div class="container">
+        <!-- 问答页面 -->
+        <div id="quiz-page">
+            <div class="header">
+                <h1>🌐 网络普法知识问答</h1>
+                <p>测测你的网络安全法律知识水平</p>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-info">
+                    <!-- 修改这里：15改为30 -->
+                    <span>进度: <span id="current-question">1</span>/<span id="total-questions">30</span></span>
+                    <span>得分: <span id="current-score">0</span></span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question" id="question-text"></div>
+                <div class="options" id="options-container"></div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+            
+            <div class="navigation-buttons">
+                <button class="button button-prev" id="prev-btn" disabled>上一题</button>
+                <button class="button" id="next-btn">下一题</button>
+            </div>
+        </div>
+        
+        <!-- 结果页面 -->
+        <div id="result-page" class="result-container">
+            <div class="header">
+                <h1>🎉 答题完成！</h1>
+                <p>你的网络普法知识测试结果</p>
+            </div>
+            
+            <div class="certificate">
+                <div class="certificate-content">
+                    <h2>普法小卫士证书</h2>
+                    <!-- 修改这里：15改为30 -->
+                    <div class="score" id="final-score">0/30</div>
+                    <p>恭喜你完成了网络安全法律知识测试！</p>
+                    <p>继续学习，成为网络空间的法律守护者！</p>
+                    <p id="result-message"></p>
+                </div>
+            </div>
+            
+            <!-- 题目回顾面板 -->
+            <div class="review-panel">
+                <div class="review-title">📚 题目回顾</div>
+                <div id="review-container"></div>
+            </div>
+            
+            <div class="share-container">
+                <div class="share-text">分享你的成绩，让更多人了解网络安全法律知识！</div>
+                <div class="share-buttons">
+                    <button class="share-btn" id="share-wechat">分享到微信</button>
+                    <button class="share-btn" id="save-result">保存成绩截图</button>
+                </div>
+            </div>
+            
+            <button class="button button-restart" id="restart-btn">再测一次</button>
+        </div>
+    </div>
+      
+      <script>
+    // 扩展题库 - 30道题目
+    const questions = [
+        {
+            question: "根据《网络安全法》，网络运营者收集、使用个人信息，应当遵循的原则是什么？",
+            options: [
+                "合法、正当、必要",
+                "自由、开放、共享", 
+                "高效、便捷、低成本",
+                "全面、深入、无遗漏"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：合法、正当、必要。这是个人信息收集的基本原则，确保个人信息不被滥用。"
+        },
+        {
+            question: "下列哪种行为可能违反《数据安全法》？",
+            options: [
+                "将重要数据存储在境外服务器",
+                "对数据进行加密处理",
+                "定期备份重要数据",
+                "设置数据访问权限"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：将重要数据存储在境外服务器。根据《数据安全法》，重要数据应当在境内存储。"
+        },
+        {
+            question: "开发一个收集用户信息的App，应当遵守什么规定？",
+            options: [
+                "无需告知用户",
+                "明确告知并取得用户同意",
+                "只在后台默默收集",
+                "收集后统一告知"
+            ],
+            correctIndex: 1,
+            explanation: "正确答案是：明确告知并取得用户同意。这是尊重用户知情权和选择权的基本要求。"
+        },
+        {
+            question: "发现网站存在安全漏洞，正确的做法是？",
+            options: [
+                "立即利用漏洞获取数据",
+                "公开漏洞细节让所有人知道",
+                "及时向网站运营方报告",
+                "当作没看见"
+            ],
+            correctIndex: 2,
+            explanation: "正确答案是：及时向网站运营方报告。这是负责任的安全研究行为，有助于维护网络安全。"
+        },
+        {
+            question: "以下关于AI生成内容版权的说法，正确的是？",
+            options: [
+                "AI生成内容没有版权",
+                "使用者拥有完整版权",
+                "需要根据具体情况判断",
+                "版权归AI开发公司所有"
+            ],
+            correctIndex: 2,
+            explanation: "正确答案是：需要根据具体情况判断。目前法律对AI生成内容的版权归属还在完善中，通常需要考虑人类创作的投入程度。"
+        },
+        {
+            question: "根据《个人信息保护法》，处理敏感个人信息需要取得什么？",
+            options: [
+                "单独同意",
+                "默示同意",
+                "无需同意",
+                "事后追认"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：单独同意。敏感个人信息需要取得个人的单独同意，不能与其他授权捆绑。"
+        },
+        {
+            question: "网络运营者发现其用户发布法律禁止的信息，应当采取什么措施？",
+            options: [
+                "立即停止传输该信息",
+                "等待监管部门通知",
+                "记录信息备查",
+                "提醒用户自行删除"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：立即停止传输该信息。根据相关法律，网络运营者有责任及时处置违法信息。"
+        },
+        {
+            question: "下列哪种行为属于侵犯公民个人信息罪？",
+            options: [
+                "出售公民个人信息",
+                "在公共场所拍摄照片",
+                "使用公开的企业信息",
+                "收集政府公开数据"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：出售公民个人信息。非法出售公民个人信息可能构成侵犯公民个人信息罪。"
+        },
+        {
+            question: "网络安全等级保护制度要求网络运营者应当履行的安全保护义务不包括？",
+            options: [
+                "制定内部安全管理制度",
+                "采取防范危害网络安全行为的技术措施",
+                "随意共享用户数据",
+                "监测记录网络运行状态"
+            ],
+            correctIndex: 2,
+            explanation: "正确答案是：随意共享用户数据。网络安全等级保护制度要求保护用户数据，不能随意共享。"
+        },
+        {
+            question: "关于网络实名制，以下说法正确的是？",
+            options: [
+                "所有网络服务都必须实名",
+                "只有特定网络服务需要实名",
+                "网络实名制已被取消",
+                "只有政府网站需要实名"
+            ],
+            correctIndex: 1,
+            explanation: "正确答案是：只有特定网络服务需要实名。根据相关规定，并非所有网络服务都强制要求实名制。"
+        },
+        {
+            question: "网络运营者应当制定网络安全事件应急预案，并定期进行什么？",
+            options: [
+                "演练",
+                "修改",
+                "公开",
+                "废止"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：演练。应急预案需要定期演练，确保在真实事件中能够有效执行。"
+        },
+        {
+            question: "关键信息基础设施的运营者采购网络产品和服务，可能影响国家安全的，应当通过什么审查？",
+            options: [
+                "国家安全审查",
+                "质量审查",
+                "价格审查",
+                "技术审查"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：国家安全审查。关键信息基础设施采购可能影响国家安全的网络产品和服务需要通过国家安全审查。"
+        },
+        {
+            question: "任何个人和组织使用网络应当遵守宪法法律，不得利用网络从事什么活动？",
+            options: [
+                "危害国家安全、荣誉和利益",
+                "正常的商业活动",
+                "合法的信息交流",
+                "正当的网络购物"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：危害国家安全、荣誉和利益。使用网络必须遵守法律法规，不得从事危害国家安全等活动。"
+        },
+        {
+            question: "网络运营者为用户办理网络接入服务，应当要求用户提供什么？",
+            options: [
+                "真实身份信息",
+                "财产证明",
+                "学历证明",
+                "工作单位"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：真实身份信息。根据网络安全法，网络运营者应当要求用户提供真实身份信息。"
+        },
+        {
+            question: "对于网络安全违法行为，任何个人和组织有权向哪些部门举报？",
+            options: [
+                "网信、电信、公安等部门",
+                "只有公安机关",
+                "只有网信部门",
+                "市场监管部门"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：网信、电信、公安等部门。多个部门都有权受理网络安全违法行为的举报。"
+        },
+        {
+            question: "根据《个人信息保护法》，个人信息的处理包括哪些活动？",
+            options: [
+                "收集、存储、使用、加工、传输、提供、公开、删除等",
+                "仅收集和使用",
+                "仅存储和传输",
+                "仅加工和提供"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：收集、存储、使用、加工、传输、提供、公开、删除等。个人信息处理包括从收集到删除的全生命周期活动。"
+        },
+        {
+            question: "根据《网络安全法》，国家实行网络安全什么保护制度？",
+            options: [
+                "等级保护",
+                "统一保护",
+                "重点保护",
+                "全面保护"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：等级保护。国家实行网络安全等级保护制度，对不同等级的网络实行不同的安全保护措施。"
+        },
+        {
+            question: "下列哪项不属于《数据安全法》规定的数据分类分级保护要求？",
+            options: [
+                "根据数据的重要程度进行分类分级",
+                "对不同级别的数据采取不同的保护措施",
+                "随意确定数据级别",
+                "重要数据应当重点保护"
+            ],
+            correctIndex: 2,
+            explanation: "正确答案是：随意确定数据级别。数据分类分级应当有科学依据，不能随意确定。"
+        },
+        {
+            question: "网络运营者发现其网络存在安全缺陷、漏洞等风险时，应当立即采取什么措施？",
+            options: [
+                "补救措施",
+                "隐瞒不报",
+                "转移责任",
+                "暂停服务"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：补救措施。发现安全风险应当立即采取补救措施，及时消除安全隐患。"
+        },
+        {
+            question: "根据《个人信息保护法》，个人信息处理者应当采取哪些措施确保个人信息安全？",
+            options: [
+                "加密、去标识化等安全技术措施",
+                "仅依靠用户自我保护",
+                "仅依靠法律保护",
+                "仅依靠技术防护"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：加密、去标识化等安全技术措施。个人信息处理者需要采取多种技术和管理措施确保信息安全。"
+        },
+        {
+            question: "网络运营者应当建立网络信息安全投诉、举报制度，公布投诉、举报方式等信息，及时受理并处理有关网络信息安全的投诉和举报，这体现了什么原则？",
+            options: [
+                "公开透明原则",
+                "保密原则",
+                "效率原则",
+                "自愿原则"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：公开透明原则。建立投诉举报制度并公布相关信息体现了公开透明的原则。"
+        },
+        {
+            question: "根据《网络安全法》，网络运营者不得做什么？",
+            options: [
+                "泄露、篡改、毁损其收集的个人信息",
+                "依法向有关部门提供个人信息",
+                "经用户同意向第三方提供个人信息",
+                "依法进行个人信息处理"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：泄露、篡改、毁损其收集的个人信息。网络运营者必须保护个人信息安全，不得泄露、篡改、毁损。"
+        },
+        {
+            question: "关键信息基础设施的运营者在中华人民共和国境内运营中收集和产生的个人信息和重要数据应当在何处存储？",
+            options: [
+                "境内存储",
+                "境外存储",
+                "云端存储",
+                "分布式存储"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：境内存储。关键信息基础设施运营者收集的个人信息和重要数据应当在境内存储。"
+        },
+        {
+            question: "根据《个人信息保护法》，个人信息处理者处理个人信息前，应当以显著方式、清晰易懂的语言真实、准确、完整地向个人告知下列哪些事项？",
+            options: [
+                "个人信息处理者的名称和联系方式",
+                "个人信息处理目的、处理方式，处理的个人信息种类、保存期限",
+                "个人行使本法规定权利的方式和程序",
+                "以上都是"
+            ],
+            correctIndex: 3,
+            explanation: "正确答案是：以上都是。个人信息处理者在处理个人信息前应当全面告知相关事项。"
+        },
+        {
+            question: "网络运营者应当按照网络安全等级保护制度的要求，履行哪些安全保护义务？",
+            options: [
+                "制定内部安全管理制度和操作规程，确定网络安全负责人，落实网络安全保护责任",
+                "采取防范计算机病毒和网络攻击、网络侵入等危害网络安全行为的技术措施",
+                "采取监测、记录网络运行状态、网络安全事件的技术措施，并按照规定留存相关的网络日志不少于六个月",
+                "以上都是"
+            ],
+            correctIndex: 3,
+            explanation: "正确答案是：以上都是。这些都是网络安全等级保护制度要求的安全保护义务。"
+        },
+        {
+            question: "根据《数据安全法》，国家建立数据安全什么机制？",
+            options: [
+                "应急处置机制",
+                "自由处理机制",
+                "无限制使用机制",
+                "完全开放机制"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：应急处置机制。国家建立数据安全应急处置机制，加强数据安全风险信息的获取、分析、研判、预警工作。"
+        },
+        {
+            question: "网络运营者应当为公安机关、国家安全机关依法维护国家安全和侦查犯罪的活动提供什么？",
+            options: [
+                "技术支持和协助",
+                "资金支持",
+                "人员支持",
+                "设备支持"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：技术支持和协助。网络运营者有义务为执法机关依法履职提供技术支持和协助。"
+        },
+        {
+            question: "根据《个人信息保护法》，在什么情况下个人信息处理者方可处理个人信息？",
+            options: [
+                "取得个人的同意",
+                "为订立、履行个人作为一方当事人的合同所必需",
+                "为履行法定职责或者法定义务所必需",
+                "以上都是"
+            ],
+            correctIndex: 3,
+            explanation: "正确答案是：以上都是。这些都是合法的个人信息处理情形。"
+        },
+        {
+            question: "网络运营者收集、使用个人信息，应当遵循什么原则？",
+            options: [
+                "合法、正当、必要",
+                "越多越好",
+                "随意收集",
+                "无需告知"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：合法、正当、必要。这是个人信息收集的基本原则。"
+        },
+        {
+            question: "根据《网络安全法》，网络运营者应当制定网络安全事件应急预案，及时处置什么？",
+            options: [
+                "系统漏洞、计算机病毒、网络攻击、网络侵入等安全风险",
+                "用户投诉",
+                "系统升级",
+                "设备更换"
+            ],
+            correctIndex: 0,
+            explanation: "正确答案是：系统漏洞、计算机病毒、网络攻击、网络侵入等安全风险。网络安全事件应急预案主要针对各类安全风险。"
+        }
+    ];
+
+    // 初始化变量
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let selectedOptionIndex = null;
+    let isAnswerChecked = false;
+    let musicPlaying = false;
+    let userAnswers = []; // 记录用户的所有答案
+    let currentRandomizedOptions = null; // 当前题目的随机化选项
+
+    // DOM元素
+    const quizPage = document.getElementById('quiz-page');
+    const resultPage = document.getElementById('result-page');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const feedback = document.getElementById('feedback');
+    const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const currentQuestionEl = document.getElementById('current-question');
+    const totalQuestionsEl = document.getElementById('total-questions');
+    const currentScoreEl = document.getElementById('current-score');
+    const finalScore = document.getElementById('final-score');
+    const resultMessage = document.getElementById('result-message');
+    const restartBtn = document.getElementById('restart-btn');
+    const shareWechatBtn = document.getElementById('share-wechat');
+    const saveResultBtn = document.getElementById('save-result');
+    const backgroundImage = document.getElementById('background-image');
+    const musicControl = document.getElementById('music-control');
+    const backgroundMusic = document.getElementById('background-music');
+    const correctFeedback = document.getElementById('correct-feedback');
+    const incorrectFeedback = document.getElementById('incorrect-feedback');
+    const reviewContainer = document.getElementById('review-container');
+    const totalQuestions = questions.length;
+
+    // 背景图片数组
+    const backgroundImages = [
+        'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80',
+        './assets/images/法律知识.png'
+    ];
+
+    // 选项随机化函数
+    function randomizeOptions(options, correctIndex) {
+        // 创建选项副本
+        const shuffledOptions = [...options];
+        
+        // 保存正确答案的文本
+        const correctAnswer = shuffledOptions[correctIndex];
+        
+        // 随机排序选项
+        for (let i = shuffledOptions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+        }
+        
+        // 找到正确答案在新数组中的位置
+        const newCorrectIndex = shuffledOptions.indexOf(correctAnswer);
+        
+        // 返回随机化后的选项和新正确索引
+        return {
+            options: shuffledOptions,
+            correctIndex: newCorrectIndex
+        };
+    }
+
+    // 初始化
+    function init() {
+        totalQuestionsEl.textContent = totalQuestions;
+        userAnswers = new Array(totalQuestions).fill(null);
+        showQuestion();
+        
+        // 随机选择背景图片
+        const randomIndex = Math.floor(Math.random() * backgroundImages.length);
+        backgroundImage.style.backgroundImage = `url('${backgroundImages[randomIndex]}')`;
+        
+        // 页面点击激活音乐
+        document.addEventListener('click', function() {
+            backgroundMusic.load();
+        }, { once: true });
+    }
+
+    // 显示当前题目
+    function showQuestion() {
+        const question = questions[currentQuestionIndex];
+        questionText.textContent = question.question;
+        optionsContainer.innerHTML = '';
+        feedback.style.display = 'none';
+        selectedOptionIndex = null;
+        isAnswerChecked = false;
+        
+        // 更新进度信息
+        currentQuestionEl.textContent = currentQuestionIndex + 1;
+        currentScoreEl.textContent = score;
+        const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+        progressBar.style.width = `${progress}%`;
+        
+        // 更新按钮状态
+        prevBtn.disabled = currentQuestionIndex === 0;
+        nextBtn.textContent = currentQuestionIndex < totalQuestions - 1 ? '下一题' : '查看结果';
+        
+        // 如果用户之前已回答过此题，恢复选择状态
+        if (userAnswers[currentQuestionIndex] !== null) {
+            selectedOptionIndex = userAnswers[currentQuestionIndex];
+            isAnswerChecked = true;
+            showAnswerFeedback();
+        }
+        
+        // 创建随机化选项
+        currentRandomizedOptions = randomizeOptions(question.options, question.correctIndex);
+        
+        // 创建选项
+        currentRandomizedOptions.options.forEach((option, index) => {
+            const optionElement = document.createElement('div');
+            optionElement.className = 'option';
+            
+            // 如果已回答过此题，标记正确/错误选项
+            if (isAnswerChecked) {
+                if (index === currentRandomizedOptions.correctIndex) {
+                    optionElement.classList.add('correct');
+                } else if (index === selectedOptionIndex && index !== currentRandomizedOptions.correctIndex) {
+                    optionElement.classList.add('incorrect');
+                }
+                
+                if (index === selectedOptionIndex) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.classList.add('disabled');
+            }
+            
+            optionElement.textContent = option;
+            optionElement.addEventListener('click', () => selectOption(index));
+            optionsContainer.appendChild(optionElement);
+        });
+    }
+
+    // 选择选项
+    function selectOption(index) {
+        if (isAnswerChecked) return;
+        
+        // 移除之前的选择
+        const options = document.querySelectorAll('.option');
+        options.forEach(option => {
+            option.classList.remove('selected');
+        });
+        
+        // 标记当前选择
+        options[index].classList.add('selected');
+        selectedOptionIndex = index;
+        userAnswers[currentQuestionIndex] = index;
+        
+        // 检查答案并显示反馈
+        checkAnswer();
+    }
+
+    // 检查答案
+    function checkAnswer() {
+        if (selectedOptionIndex === null) return;
+        
+        const isCorrect = selectedOptionIndex === currentRandomizedOptions.correctIndex;
+        
+        // 显示特效反馈
+        if (isCorrect) {
+            correctFeedback.style.display = 'block';
+            score++;
+            currentScoreEl.textContent = score;
+        } else {
+            incorrectFeedback.style.display = 'block';
+        }
+        
+        // 3秒后隐藏特效
+        setTimeout(() => {
+            correctFeedback.style.display = 'none';
+            incorrectFeedback.style.display = 'none';
+        }, 2000);
+        
+        // 标记正确和错误选项
+        const options = document.querySelectorAll('.option');
+        options.forEach((option, index) => {
+            option.classList.add('disabled');
+            if (index === currentRandomizedOptions.correctIndex) {
+                option.classList.add('correct');
+            } else if (index === selectedOptionIndex && !isCorrect) {
+                option.classList.add('incorrect');
+            }
+        });
+        
+        feedback.textContent = questions[currentQuestionIndex].explanation;
+        feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+        feedback.style.display = 'block';
+        
+        isAnswerChecked = true;
+    }
+
+    // 显示答案反馈（用于回顾时）
+    function showAnswerFeedback() {
+        const isCorrect = selectedOptionIndex === currentRandomizedOptions.correctIndex;
+        feedback.textContent = questions[currentQuestionIndex].explanation;
+        feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+        feedback.style.display = 'block';
+    }
+
+    // 下一题
+    function nextQuestion() {
+        if (currentQuestionIndex < totalQuestions - 1) {
+            currentQuestionIndex++;
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    // 上一题
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            showQuestion();
+        }
+    }
+
+    // 显示结果
+    function showResult() {
+        quizPage.style.display = 'none';
+        resultPage.style.display = 'block';
+        finalScore.textContent = `${score}/${totalQuestions}`;
+        
+        // 根据得分显示不同的消息
+        const percentage = (score / totalQuestions) * 100;
+        let message = '';
+        if (percentage >= 95) {
+            message = '太棒了！你是网络安全法律专家！\n\n找我们摊位人员领取小礼品吧！';
+        } else if (percentage >= 70) {
+            message = '做得很好！你对网络安全法律有很好的理解！';
+        } else if (percentage >= 50) {
+            message = '不错！继续学习，提升你的网络安全法律知识！';
+        } else {
+            message = '加油！多学习网络安全法律知识，保护自己和他人！';
+        }
+        resultMessage.textContent = message;
+        
+        // 生成题目回顾
+        generateReview();
+    }
+
+    // 生成题目回顾
+    function generateReview() {
+        reviewContainer.innerHTML = '';
+        
+        questions.forEach((question, index) => {
+            const userAnswer = userAnswers[index];
+            const isCorrect = userAnswer === question.correctIndex;
+            
+            const reviewItem = document.createElement('div');
+            reviewItem.className = 'review-item';
+            
+            let answerHtml = '';
+            if (userAnswer !== null) {
+                answerHtml = `
+                    <div class="review-answer">
+                        你的答案: 
+                        <span class="${isCorrect ? 'review-correct' : 'review-incorrect'}">
+                            ${question.options[userAnswer]}
+                        </span>
+                        ${!isCorrect ? `<br>正确答案: <span class="review-correct">${question.options[question.correctIndex]}</span>` : ''}
+                    </div>
+                `;
+            } else {
+                answerHtml = `
+                    <div class="review-answer">
+                        未作答<br>
+                        正确答案: <span class="review-correct">${question.options[question.correctIndex]}</span>
+                    </div>
+                `;
+            }
+            
+            reviewItem.innerHTML = `
+                <div class="review-question">${index + 1}. ${question.question}</div>
+                ${answerHtml}
+            `;
+            
+            reviewContainer.appendChild(reviewItem);
+        });
+    }
+
+    // 重新开始
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        userAnswers = new Array(totalQuestions).fill(null);
+        quizPage.style.display = 'block';
+        resultPage.style.display = 'none';
+        showQuestion();
+    }
+
+    // 切换音乐播放状态
+    function toggleMusic() {
+        if (musicPlaying) {
+            backgroundMusic.pause();
+            musicControl.querySelector('.music-icon').textContent = '🔇';
+            musicPlaying = false;
+        } else {
+            backgroundMusic.play().then(() => {
+                musicControl.querySelector('.music-icon').textContent = '🎵';
+                musicPlaying = true;
+            }).catch(error => {
+                console.log('播放失败:', error);
+                musicControl.querySelector('.music-icon').textContent = '🔇';
+                alert('请点击页面任意位置后，再点击音乐按钮开启音乐');
+            });
+        }
+    }
+
+    // 音量控制功能
+    function initVolumeControl() {
+        const volumeControl = document.getElementById('volume-control');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumePercentage = document.getElementById('volume-percentage');
+        const backgroundMusic = document.getElementById('background-music');
+        
+        // 确保元素存在
+        if (!volumeSlider || !volumePercentage || !backgroundMusic) {
+            console.log('音量控制元素未找到');
+            return;
+        }
+        
+        // 设置初始音量
+        backgroundMusic.volume = volumeSlider.value;
+        updateVolumeDisplay(volumeSlider.value);
+        
+        // 音量滑块变化事件
+        volumeSlider.addEventListener('input', function() {
+            backgroundMusic.volume = this.value;
+            updateVolumeDisplay(this.value);
+        });
+        
+        // 更新音量显示百分比
+        function updateVolumeDisplay(volume) {
+            const percentage = Math.round(volume * 100);
+            if (volumePercentage) {
+                volumePercentage.textContent = `${percentage}%`;
+            }
+        }
+        
+        // 点击音量控制区域保持显示
+        if (volumeControl) {
+            volumeControl.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 点击页面其他地方隐藏音量控制
+            document.addEventListener('click', function() {
+                volumeControl.classList.remove('show');
+            });
+            
+            // 音乐控制按钮点击时显示音量控制
+            document.getElementById('music-control').addEventListener('click', function(e) {
+                e.stopPropagation();
+                volumeControl.classList.toggle('show');
+            });
+        }
+    }
+
+    // 分享到微信
+    function shareToWechat() {
+        const shareText = `我在「网络普法知识问答」中获得了 ${score}/${totalQuestions} 分！${score >= 10 ? '快来挑战吧！' : '你也来试试吧！'}`;
+        
+        // 使用Web Share API如果可用
+        if (navigator.share) {
+            navigator.share({
+                title: '网络普法知识问答',
+                text: shareText,
+                url: window.location.href,
+            })
+            .catch(error => console.log('分享出错:', error));
+        } else {
+            // 备用方案：复制到剪贴板
+            const textArea = document.createElement('textarea');
+            textArea.value = `${shareText} ${window.location.href}`;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('分享内容已复制到剪贴板，快去粘贴分享吧！\n\nPS:转发给他人，给摊位工作人员展示也有机会活动小礼品哦！');
+        }
+    }
+
+    // 保存成绩截图
+    function saveResult() {
+        alert('还想我帮你截图？可是我不会啊，自己截图吧！');
+    }
+
+    // 事件监听
+    nextBtn.addEventListener('click', nextQuestion);
+    prevBtn.addEventListener('click', prevQuestion);
+    restartBtn.addEventListener('click', restartQuiz);
+    shareWechatBtn.addEventListener('click', shareToWechat);
+    saveResultBtn.addEventListener('click', saveResult);
+    musicControl.addEventListener('click', toggleMusic);
+
+    // 初始化音量控制
+    initVolumeControl();
+
+    // 初始化应用
+    init();
+</script>
+</body>
+</html>
