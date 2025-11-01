@@ -773,17 +773,23 @@
 
     // 从题库中随机抽取15题
     function getRandomQuestions(questionCount = 15) {
+        console.log('开始随机抽取题目，题库总数:', allQuestions.length);
+        
         // 创建题库副本
         const shuffled = [...allQuestions];
         
-        // 随机排序
+        // Fisher-Yates 洗牌算法
         for (let i = shuffled.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
         
         // 返回前15题
-        return shuffled.slice(0, questionCount);
+        const selectedQuestions = shuffled.slice(0, questionCount);
+        console.log('抽取到的题目数量:', selectedQuestions.length);
+        console.log('抽取到的题目:', selectedQuestions.map(q => q.question.substring(0, 20) + '...'));
+        
+        return selectedQuestions;
     }
 
     // 初始化变量
@@ -795,6 +801,7 @@
     let userAnswers = [];
     let currentRandomizedOptions = null;
     let questions = []; // 这里会存储随机抽取的题目
+    let totalQuestions = 15; // 设置为15题
 
     // DOM元素
     const quizPage = document.getElementById('quiz-page');
@@ -819,7 +826,6 @@
     const correctFeedback = document.getElementById('correct-feedback');
     const incorrectFeedback = document.getElementById('incorrect-feedback');
     const reviewContainer = document.getElementById('review-container');
-    let totalQuestions = 15; // 设置为15题
 
     // 背景图片数组
     const backgroundImages = [
@@ -847,9 +853,12 @@
 
     // 初始化
     function init() {
+        console.log('初始化开始...');
+        
         // 随机抽取15题
         questions = getRandomQuestions(15);
         totalQuestions = questions.length;
+        console.log('实际使用的题目数量:', totalQuestions);
         
         totalQuestionsEl.textContent = totalQuestions;
         userAnswers = new Array(totalQuestions).fill(null);
@@ -865,6 +874,8 @@
 
     // 显示当前题目
     function showQuestion() {
+        console.log('显示第', currentQuestionIndex + 1, '题，总题数:', totalQuestions);
+        
         const question = questions[currentQuestionIndex];
         questionText.textContent = question.question;
         optionsContainer.innerHTML = '';
@@ -912,6 +923,24 @@
         });
     }
 
+    // 重新开始
+    function restartQuiz() {
+        console.log('重新开始，重新抽取题目...');
+        
+        // 重新随机抽取题目
+        questions = getRandomQuestions(15);
+        totalQuestions = questions.length;
+        console.log('重新抽取后的题目数量:', totalQuestions);
+        
+        currentQuestionIndex = 0;
+        score = 0;
+        userAnswers = new Array(totalQuestions).fill(null);
+        quizPage.style.display = 'block';
+        resultPage.style.display = 'none';
+        showQuestion();
+    }
+
+    // ... 其他函数保持不变（checkAnswer、nextQuestion、prevQuestion等）...
     // 选择选项
     function selectOption(index) {
         if (isAnswerChecked) return;
@@ -1050,20 +1079,6 @@
             
             reviewContainer.appendChild(reviewItem);
         });
-    }
-
-    // 重新开始
-    function restartQuiz() {
-        // 重新随机抽取题目
-        questions = getRandomQuestions(15);
-        totalQuestions = questions.length;
-        
-        currentQuestionIndex = 0;
-        score = 0;
-        userAnswers = new Array(totalQuestions).fill(null);
-        quizPage.style.display = 'block';
-        resultPage.style.display = 'none';
-        showQuestion();
     }
 
     // 切换音乐播放状态
